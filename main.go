@@ -21,8 +21,8 @@ func init() {
 }
 
 func main() {
-	connection := os.Getenv("CONNECTION")
-	DB := database.Connect(connection)
+
+	DB := database.Connect(os.Getenv("ENV"))
 
 	characterRepo := repos.NewCharacterRepo(DB)
 	characterService := &services.CharacterService{

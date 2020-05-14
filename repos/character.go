@@ -10,48 +10,61 @@ import (
 type CharacterRepository interface {
 	Store(user *domain.Character) error
 	FindAll() []*domain.Character
-	FindByName(name string) (*domain.Character, error)
+	FindByName(name string) ([]*domain.Character, error)
 	FindByID(id string) (*domain.Character, error)
 	FindByFilter(filter, value string) []*domain.Character
-	FindFirstByFilter(filter, value string) *domain.Character
+	HasCharacterWhere(filter, value string) bool
 }
 
 type CharacterRepositoryDB struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 // NewCharacterRepo creates a new instance of the Character repo with the given database connection
 func NewCharacterRepo(db *gorm.DB) *CharacterRepositoryDB {
 	return &CharacterRepositoryDB{
-		db: db,
+		DB: db,
 	}
 }
 
 func (repo *CharacterRepositoryDB) Store(character *domain.Character) error {
-	err := repo.db.Create(character).Error
+	err := repo.DB.Create(character).Error
 	return err
 }
 
-func (repo *CharacterRepositoryDB) FindByName(name string) []*domain.Character {
+func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character, error) {
 	var characters []*domain.Character
-	err := repo.db.Where("name LIKE ?", "%"+name+"%").Find(&characters).Error
+	err := repo.DB.Where("name LIKE ?", "%"+name+"%").Find(&characters).Error
 	if err != nil {
 		log.Printf("error querying by name %v\n", err)
+		return nil, err
 	}
-	return characters
+	return characters, nil
 }
 
 func (repo *CharacterRepositoryDB) FindByFilter(filter, value string) []*domain.Character {
 	var characters []*domain.Character
-	repo.db.Where(filter, value).Find(&characters)
+	repo.DB.Where(filter, value).Find(&characters)
 	return characters
 }
-func (repo *CharacterRepositoryDB) FindFirstByFilter(filter, value string) *domain.Character {
-	character := &domain.Character{}
-	repo.db.Where(filter, value).First(character)
-	return character
-}
+
 func (repo *CharacterRepositoryDB) HasCharacterWhere(filter, value string) bool {
 	character := &domain.Character{}
-	return !repo.db.Where(filter, value).First(character).RecordNotFound()
+	return !repo.DB.Where(filter, value).First(character).RecordNotFound()
+}
+
+func (repo *CharacterRepositoryDB) FindAll() []*domain.Character {
+	var characters []*domain.Character
+	repo.DB.Find(&characters)
+	return characters
+}
+
+func (repo *CharacterRepositoryDB) FindByID(id string) (*domain.Character, error) {
+	character := &domain.Character{}
+	err := repo.DB.Where("id = ?", id).First(&character).Error
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return character, nil
 }

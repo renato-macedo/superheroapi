@@ -5,12 +5,20 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/renato-macedo/superheroapi/domain"
 	"log"
+	"os"
 )
 
 // Connect to the database
-func Connect(dsn string) *gorm.DB {
+func Connect(env string) *gorm.DB {
 
-	db, err := gorm.Open("postgres", dsn)
+	var connection string
+	if env != "test" {
+		connection = os.Getenv("CONNECTION")
+	} else {
+		connection = os.Getenv("CONNECTION_TEST")
+	}
+
+	db, err := gorm.Open("postgres", connection)
 
 	if err != nil {
 		log.Fatalf("Error connecting to database: %v", err)

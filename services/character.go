@@ -10,7 +10,7 @@ import (
 )
 
 type CharacterService struct {
-	Repository *repos.CharacterRepositoryDB
+	Repository repos.CharacterRepository
 	API        *SuperHeroAPIService
 }
 
@@ -23,7 +23,7 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 	}
 
 	if result.Response == "error" {
-		return nil, fmt.Errorf("could not add this super because it does not exists")
+		return nil, fmt.Errorf("could not add this super because it does not exist")
 	}
 
 	// var createdCharacters []*domain.Character
@@ -62,6 +62,8 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 	// return which character were added
 	return createdCharacters, nil
 }
+
+
 
 func parseRelatives(relativesResult string) int {
 	// TODO handle edge cases
