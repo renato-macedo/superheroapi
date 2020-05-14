@@ -7,7 +7,6 @@ import (
 	"github.com/satori/go.uuid"
 	"log"
 	"strings"
-
 )
 
 type CharacterService struct {
@@ -16,50 +15,51 @@ type CharacterService struct {
 }
 
 func (service *CharacterService) Create(name string) ([]*domain.Character, error) {
-	// characters := service.Repository.FindByName(strings.Title(strings.ToLower(name)))
 
-	//if len(characters) >= 1 {
-	//	return characters, fmt.Errorf("character already exists")
-	//}
-
+	// it will be always necessary to check the super hero api
 	result, err := service.API.SearchCharacter(name)
-	if err != nil || result.Response == "error" {
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	if result.Response == "error" {
 		return nil, fmt.Errorf("could not add this super because it does not exists")
 	}
 
-	var createdCharacters []*domain.Character
+	// var createdCharacters []*domain.Character
 
-	// var waitGroup sync.WaitGroup
+	createdCharacters := make([]*domain.Character, 0)
 
+	// check which of the search results were not stored yet
 	for _, value := range result.Results {
-		super := &domain.Character{
-			ID:                uuid.NewV4().String(),
-			Name:              value.Name,
-			FullName:          value.Biography.FullName,
-			Intelligence:      value.Powerstats.Intelligence,
-			Power:             value.Powerstats.Power,
-			Occupation:        value.Work.Occupation,
-			Image:             value.Image.URL,
-			Alignment:         value.Biography.Alignment,
-			GroupAffiliation:  value.Connections.GroupAffiliation,
-			NumberOfRelatives: parseRelatives(value.Connections.Relatives),
-		}
-		// waitGroup.Add(1)
+		exists := service.Repository.HasCharacterWhere("api_id = ?", value.ID)
 
-		go func() { // wg *sync.WaitGroup
-			//defer wg.Done()
+		// if the were not stored just store them and append to the createdCharacters slice
+		if !exists {
+			super := &domain.Character{
+				ID:                uuid.NewV4().String(),
+				ApiId:             value.ID,
+				Name:              value.Name,
+				FullName:          value.Biography.FullName,
+				Intelligence:      value.Powerstats.Intelligence,
+				Power:             value.Powerstats.Power,
+				Occupation:        value.Work.Occupation,
+				Image:             value.Image.URL,
+				Alignment:         value.Biography.Alignment,
+				GroupAffiliation:  value.Connections.GroupAffiliation,
+				NumberOfRelatives: parseRelatives(value.Connections.Relatives),
+			}
+
 			err := service.Repository.Store(super)
 			log.Println(err)
 			if err == nil {
 				createdCharacters = append(createdCharacters, super)
-				//return nil, err
 			}
-		}() //&waitGroup
+		}
 
 	}
 
-	// waitGroup.Wait()
-
+	// return which character were added
 	return createdCharacters, nil
 }
 

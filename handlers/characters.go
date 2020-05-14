@@ -35,7 +35,10 @@ func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 		c.Status(400).JSON(utils.BadRequest(err.Error()))
 		return
 	}
-
+	if len(createdCharacters) == 0 {
+		c.Status(400).JSON(utils.BadRequest("Character already exists"))
+		return
+	}
 	response := utils.NewCreatedResponse(createdCharacters)
 
 	if err := c.Status(201).JSON(response); err != nil {
