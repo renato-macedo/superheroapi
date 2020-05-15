@@ -40,6 +40,8 @@ func main() {
 
 	app.Get("/super", characterHandler.GetCharacter)
 	app.Post("/super", characterHandler.CreateCharacter)
+	app.Get("/super/heros", characterHandler.GetHeros)
+	app.Get("/super/villains", characterHandler.GetVillains)
 
 	app.Listen(3000)
 }

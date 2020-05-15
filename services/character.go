@@ -78,6 +78,16 @@ func (service *CharacterService) FindAll() []*domain.Character {
 	return service.Repository.FindAll()
 }
 
+// FindHeros returns characters with alignment "good"
+func (service *CharacterService) FindHeros() []*domain.Character {
+	return service.Repository.FindByFilter("alignment = ?", "good")
+}
+
+// FindVillains returns characters with alignment "bad"
+func (service *CharacterService) FindVillains() []*domain.Character {
+	return service.Repository.FindByFilter("alignment = ?", "bad")
+}
+
 func parseRelatives(relativesResult string) int {
 	// TODO handle edge cases
 	relatives := strings.Split(relativesResult, "),")

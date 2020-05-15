@@ -59,3 +59,21 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) {
 		return
 	}
 }
+
+// GetHeros handles GET requests on /super/heros
+func (h *CharacterHandler) GetHeros(c *fiber.Ctx) {
+	characters := h.Service.FindHeros()
+	if err := c.Status(200).JSON(characters); err != nil {
+		c.Status(500).Send(err)
+		return
+	}
+}
+
+// GetVillains handles GET requests on /super/villains
+func (h *CharacterHandler) GetVillains(c *fiber.Ctx) {
+	characters := h.Service.FindVillains()
+	if err := c.Status(200).JSON(characters); err != nil {
+		c.Status(500).Send(err)
+	}
+
+}
