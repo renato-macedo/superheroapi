@@ -38,6 +38,7 @@ func main() {
 
 	app := fiber.New()
 
+	app.Get("/super", characterHandler.GetCharacter)
 	app.Post("/super", characterHandler.CreateCharacter)
 
 	app.Listen(3000)

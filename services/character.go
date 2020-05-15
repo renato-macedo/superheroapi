@@ -60,15 +60,22 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 		}
 
 		err := service.Repository.Store(super)
-		log.Println(err)
-		if err == nil {
-			createdCharacters = append(createdCharacters, super)
+
+		if err != nil {
+			log.Println(err)
+			continue
 		}
+		createdCharacters = append(createdCharacters, super)
 
 	}
 
 	// return which character were added
 	return createdCharacters, nil
+}
+
+// FindAll returns all stored supers
+func (service *CharacterService) FindAll() []*domain.Character {
+	return service.Repository.FindAll()
 }
 
 func parseRelatives(relativesResult string) int {

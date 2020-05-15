@@ -50,3 +50,12 @@ func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 		return
 	}
 }
+
+// GetCharacter handles GET requests on /super
+func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) {
+	characters := h.Service.FindAll()
+	if err := c.Status(200).JSON(characters); err != nil {
+		c.Status(500).Send(err)
+		return
+	}
+}

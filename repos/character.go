@@ -1,12 +1,13 @@
 package repos
 
 import (
+	"log"
+
 	"github.com/jinzhu/gorm"
 	"github.com/renato-macedo/superheroapi/domain"
-	"log"
 )
 
-// Character interface
+// CharacterRepository interface
 type CharacterRepository interface {
 	Store(user *domain.Character) error
 	FindAll() []*domain.Character
@@ -16,6 +17,7 @@ type CharacterRepository interface {
 	HasCharacterWhere(filter, value string) bool
 }
 
+// CharacterRepositoryDB implements the CharacterRepository interface for databases
 type CharacterRepositoryDB struct {
 	DB *gorm.DB
 }
@@ -27,11 +29,13 @@ func NewCharacterRepo(db *gorm.DB) *CharacterRepositoryDB {
 	}
 }
 
+// Store a character in the database
 func (repo *CharacterRepositoryDB) Store(character *domain.Character) error {
 	err := repo.DB.Create(character).Error
 	return err
 }
 
+// FindByName exec a LIKE querie with the given name
 func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character, error) {
 	var characters []*domain.Character
 	err := repo.DB.Where("name LIKE ?", "%"+name+"%").Find(&characters).Error
@@ -42,23 +46,27 @@ func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character,
 	return characters, nil
 }
 
+// FindByFilter queries character by the given filter e.g. allignment = ?
 func (repo *CharacterRepositoryDB) FindByFilter(filter, value string) []*domain.Character {
 	var characters []*domain.Character
 	repo.DB.Where(filter, value).Find(&characters)
 	return characters
 }
 
+// HasCharacterWhere tells if the databaase has a character that satisfies the condition
 func (repo *CharacterRepositoryDB) HasCharacterWhere(filter, value string) bool {
 	character := &domain.Character{}
 	return !repo.DB.Where(filter, value).First(character).RecordNotFound()
 }
 
+// FindAll return all records
 func (repo *CharacterRepositoryDB) FindAll() []*domain.Character {
 	var characters []*domain.Character
 	repo.DB.Find(&characters)
 	return characters
 }
 
+//FindByID return the Character with the given id
 func (repo *CharacterRepositoryDB) FindByID(id string) (*domain.Character, error) {
 	character := &domain.Character{}
 	err := repo.DB.Where("id = ?", id).First(&character).Error
