@@ -39,9 +39,11 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/super", characterHandler.GetCharacter)
-	app.Post("/super", characterHandler.CreateCharacter)
 	app.Get("/super/heros", characterHandler.GetHeros)
 	app.Get("/super/villains", characterHandler.GetVillains)
+	app.Get("/super/search", characterHandler.Search)
+	app.Get("/super/:id", characterHandler.FindByID)
 
+	app.Post("/super", characterHandler.CreateCharacter)
 	app.Listen(3000)
 }

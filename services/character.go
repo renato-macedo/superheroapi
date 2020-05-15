@@ -47,8 +47,9 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 		// if they were not stored just do it and append to the createdCharacters slice
 		super := &domain.Character{
 			ID:                uuid.NewV4().String(),
-			ApiId:             value.ID,
+			APIID:             value.ID,
 			Name:              value.Name,
+			NameLowerCase:     strings.ToLower(value.Name),
 			FullName:          value.Biography.FullName,
 			Intelligence:      value.Powerstats.Intelligence,
 			Power:             value.Powerstats.Power,
@@ -86,6 +87,16 @@ func (service *CharacterService) FindHeros() []*domain.Character {
 // FindVillains returns characters with alignment "bad"
 func (service *CharacterService) FindVillains() []*domain.Character {
 	return service.Repository.FindByFilter("alignment = ?", "bad")
+}
+
+// FindByID return a character with the given id
+func (service *CharacterService) FindByID(id string) (*domain.Character, error) {
+	return service.Repository.FindByID(id)
+}
+
+// FindByName returns all characters that has the given name
+func (service *CharacterService) FindByName(name string) ([]*domain.Character, error) {
+	return service.Repository.FindByName(name)
 }
 
 func parseRelatives(relativesResult string) int {

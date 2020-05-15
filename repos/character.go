@@ -2,6 +2,7 @@ package repos
 
 import (
 	"log"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/renato-macedo/superheroapi/domain"
@@ -38,7 +39,7 @@ func (repo *CharacterRepositoryDB) Store(character *domain.Character) error {
 // FindByName exec a LIKE querie with the given name
 func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character, error) {
 	var characters []*domain.Character
-	err := repo.DB.Where("name LIKE ?", "%"+name+"%").Find(&characters).Error
+	err := repo.DB.Where("name_lower_case LIKE ?", "%"+strings.ToLower(name)+"%").Find(&characters).Error
 	if err != nil {
 		log.Printf("error querying by name %v\n", err)
 		return nil, err

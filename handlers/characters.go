@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strings"
+
 	"github.com/gofiber/fiber"
 	"github.com/renato-macedo/superheroapi/handlers/utils"
 	"github.com/renato-macedo/superheroapi/services"
@@ -76,4 +78,33 @@ func (h *CharacterHandler) GetVillains(c *fiber.Ctx) {
 		c.Status(500).Send(err)
 	}
 
+}
+
+//FindByID handle GET requests on /super/:id
+func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
+	id := c.Params("id")
+	character, err := h.Service.FindByID(id)
+
+	if err != nil {
+		c.Status(404).JSON(utils.NotFound("Character not found"))
+		return
+	}
+
+	if err := c.JSON(character); err != nil {
+		c.Status(500).JSON(utils.ServerError("Something went wrong"))
+	}
+}
+
+// Search find a characters by its name
+func (h *CharacterHandler) Search(c *fiber.Ctx) {
+	name := c.Query("name")
+
+	characters, err := h.Service.FindByName(strings.Title(strings.ToLower(name)))
+	if err != nil {
+		c.Status(404).JSON(utils.NotFound("Character not found"))
+		return
+	}
+	if err := c.JSON(characters); err != nil {
+		c.Status(500).JSON(utils.ServerError("Something went wrong"))
+	}
 }
