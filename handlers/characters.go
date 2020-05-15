@@ -6,16 +6,19 @@ import (
 	"github.com/renato-macedo/superheroapi/services"
 )
 
+// CharacterHandler accepts the requests
 type CharacterHandler struct {
 	Service *services.CharacterService
 }
 
+// NewCharacterHandler return a instance with the given CharacterService
 func NewCharacterHandler(service *services.CharacterService) *CharacterHandler {
 	return &CharacterHandler{
 		Service: service,
 	}
 }
 
+// CreateCharacter handler
 func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 	body := &utils.CreateRequest{}
 	// Parse body into struct
@@ -31,6 +34,7 @@ func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 	}
 
 	createdCharacters, err := h.Service.Create(body.Name)
+
 	if err != nil {
 		c.Status(400).JSON(utils.BadRequest(err.Error()))
 		return

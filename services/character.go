@@ -2,21 +2,27 @@ package services
 
 import (
 	"fmt"
-	"github.com/renato-macedo/superheroapi/domain"
-	"github.com/renato-macedo/superheroapi/repos"
-	"github.com/satori/go.uuid"
 	"log"
 	"strings"
+
+	"github.com/renato-macedo/superheroapi/domain"
+	"github.com/renato-macedo/superheroapi/repos"
+	uuid "github.com/satori/go.uuid"
 )
 
+// CharacterService has methods that handles the Characters use cases
 type CharacterService struct {
 	Repository repos.CharacterRepository
 	API        *SuperHeroAPIService
 }
 
+// Create method will store any character that matches the given name in tha superhero api
 func (service *CharacterService) Create(name string) ([]*domain.Character, error) {
 
-	// it will be always necessary to check the super hero api
+	/*
+		since it's possible to delete the super,
+		it will be always necessary to check the super hero api, before adding new ones
+	*/
 	result, err := service.API.SearchCharacter(name)
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
@@ -34,27 +40,29 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 	for _, value := range result.Results {
 		exists := service.Repository.HasCharacterWhere("api_id = ?", value.ID)
 
-		// if the were not stored just store them and append to the createdCharacters slice
-		if !exists {
-			super := &domain.Character{
-				ID:                uuid.NewV4().String(),
-				ApiId:             value.ID,
-				Name:              value.Name,
-				FullName:          value.Biography.FullName,
-				Intelligence:      value.Powerstats.Intelligence,
-				Power:             value.Powerstats.Power,
-				Occupation:        value.Work.Occupation,
-				Image:             value.Image.URL,
-				Alignment:         value.Biography.Alignment,
-				GroupAffiliation:  value.Connections.GroupAffiliation,
-				NumberOfRelatives: parseRelatives(value.Connections.Relatives),
-			}
+		if exists {
+			continue
+		}
 
-			err := service.Repository.Store(super)
-			log.Println(err)
-			if err == nil {
-				createdCharacters = append(createdCharacters, super)
-			}
+		// if they were not stored just do it and append to the createdCharacters slice
+		super := &domain.Character{
+			ID:                uuid.NewV4().String(),
+			ApiId:             value.ID,
+			Name:              value.Name,
+			FullName:          value.Biography.FullName,
+			Intelligence:      value.Powerstats.Intelligence,
+			Power:             value.Powerstats.Power,
+			Occupation:        value.Work.Occupation,
+			Image:             value.Image.URL,
+			Alignment:         value.Biography.Alignment,
+			GroupAffiliation:  value.Connections.GroupAffiliation,
+			NumberOfRelatives: parseRelatives(value.Connections.Relatives),
+		}
+
+		err := service.Repository.Store(super)
+		log.Println(err)
+		if err == nil {
+			createdCharacters = append(createdCharacters, super)
 		}
 
 	}
@@ -62,8 +70,6 @@ func (service *CharacterService) Create(name string) ([]*domain.Character, error
 	// return which character were added
 	return createdCharacters, nil
 }
-
-
 
 func parseRelatives(relativesResult string) int {
 	// TODO handle edge cases

@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// CharacterResponse represents the Character json object returned from the SuperHeroAPI
 type CharacterResponse struct {
 	// Response    string `json:"response"`
 	ID string `json:"id"`
@@ -57,21 +58,23 @@ type CharacterResponse struct {
 	} `json:"image"`
 }
 
+// SearchResult represents the Character json object returned from the SuperHeroAPI
 type SearchResult struct {
 	Response   string               `json:"response"`
 	ResultsFor string               `json:"results-for"`
 	Results    []*CharacterResponse `json:"results"`
 }
 
+// SuperHeroAPIService need a baseURL and a API key
 type SuperHeroAPIService struct {
 	BaseURL string
-	ApiKey  string
+	APIKey  string
 }
 
 // SearchCharacter call search endpoint
 func (api *SuperHeroAPIService) SearchCharacter(name string) (*SearchResult, error) {
 
-	resp, err := http.Get(fmt.Sprintf("%v/%v/search/%v", api.BaseURL, api.ApiKey, name))
+	resp, err := http.Get(fmt.Sprintf("%v/%v/search/%v", api.BaseURL, api.APIKey, name))
 	if err != nil {
 		log.Printf("Error search for character %v\n", err)
 		return nil, err

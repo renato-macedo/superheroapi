@@ -1,13 +1,14 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/renato-macedo/superheroapi/database"
 	"github.com/renato-macedo/superheroapi/handlers"
 	"github.com/renato-macedo/superheroapi/repos"
 	"github.com/renato-macedo/superheroapi/services"
-	"log"
-	"os"
 
 	"github.com/gofiber/fiber"
 )
@@ -29,7 +30,7 @@ func main() {
 		Repository: characterRepo,
 		API: &services.SuperHeroAPIService{
 			BaseURL: "https://superheroapi.com/api",
-			ApiKey:  os.Getenv("API_KEY"),
+			APIKey:  os.Getenv("API_KEY"),
 		},
 	}
 

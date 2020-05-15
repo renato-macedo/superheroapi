@@ -1,13 +1,14 @@
 package services
 
 import (
+	"log"
+	"os"
+	"testing"
+
 	"github.com/joho/godotenv"
 	"github.com/renato-macedo/superheroapi/database"
 	"github.com/renato-macedo/superheroapi/domain"
 	"github.com/renato-macedo/superheroapi/repos"
-	"log"
-	"os"
-	"testing"
 )
 
 func init() {
@@ -17,17 +18,6 @@ func init() {
 		log.Fatalf("Error loading .env file")
 	}
 }
-
-//var repository repos.CharacterRepository
-//
-//type MockRepo struct {}
-//
-//func (r *MockRepo) Store(_ *domain.Character) error {
-//	return nil
-//}
-//func (r *MockRepo) HasCharacterWhere(_, _ string) bool {
-//	return false
-//}
 
 type TestPair struct {
 	input  string
@@ -42,7 +32,7 @@ func TestCharacterService_Create(t *testing.T) {
 		Repository: repository,
 		API: &SuperHeroAPIService{
 			BaseURL: "https://superheroapi.com/api",
-			ApiKey:  os.Getenv("API_KEY"),
+			APIKey:  os.Getenv("API_KEY"),
 		},
 	}
 
