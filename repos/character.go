@@ -16,6 +16,7 @@ type CharacterRepository interface {
 	FindByID(id string) (*domain.Character, error)
 	FindByFilter(filter, value string) []*domain.Character
 	HasCharacterWhere(filter, value string) bool
+	Delete(id string) error
 }
 
 // CharacterRepositoryDB implements the CharacterRepository interface for databases
@@ -76,4 +77,13 @@ func (repo *CharacterRepositoryDB) FindByID(id string) (*domain.Character, error
 		return nil, err
 	}
 	return character, nil
+}
+
+// Delete removes the Character with given id from the database
+func (repo *CharacterRepositoryDB) Delete(id string) error {
+	character := &domain.Character{
+		ID: id,
+	}
+	err := repo.DB.Delete(character).Error
+	return err
 }

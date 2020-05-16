@@ -80,7 +80,7 @@ func (h *CharacterHandler) GetVillains(c *fiber.Ctx) {
 
 }
 
-//FindByID handle GET requests on /super/:id
+//FindByID handles GET requests on /super/:id
 func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
 	id := c.Params("id")
 	character, err := h.Service.FindByID(id)
@@ -95,7 +95,7 @@ func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
 	}
 }
 
-// Search find a characters by its name
+// Search handles GET requests on /super/search
 func (h *CharacterHandler) Search(c *fiber.Ctx) {
 	name := c.Query("name")
 
@@ -107,4 +107,20 @@ func (h *CharacterHandler) Search(c *fiber.Ctx) {
 	if err := c.JSON(characters); err != nil {
 		c.Status(500).JSON(utils.ServerError("Something went wrong"))
 	}
+}
+
+// Delete handle DELETE requests on /super/:id
+func (h *CharacterHandler) Delete(c *fiber.Ctx) {
+	id := c.Params("id")
+	if id == "" {
+		c.Status(400).JSON(utils.NotFound("Missing character id"))
+		return
+	}
+	err := h.Service.Delete(id)
+	if err != nil {
+		c.Status(400).JSON(utils.NotFound("Character does not exists"))
+		return
+	}
+
+	c.Status(200).JSON(utils.Ok("Character deleted"))
 }

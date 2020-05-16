@@ -45,5 +45,7 @@ func main() {
 	app.Get("/super/:id", characterHandler.FindByID)
 
 	app.Post("/super", characterHandler.CreateCharacter)
+	app.Delete("/super/:id", characterHandler.Delete)
+
 	app.Listen(3000)
 }

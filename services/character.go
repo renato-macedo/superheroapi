@@ -99,6 +99,11 @@ func (service *CharacterService) FindByName(name string) ([]*domain.Character, e
 	return service.Repository.FindByName(name)
 }
 
+// Delete s a character from the database
+func (service *CharacterService) Delete(id string) error {
+	return service.Repository.Delete(id)
+}
+
 func parseRelatives(relativesResult string) int {
 	// TODO handle edge cases
 	relatives := strings.Split(relativesResult, "),")

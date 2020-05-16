@@ -1,20 +1,24 @@
 package utils
 
 import (
-	"github.com/renato-macedo/superheroapi/domain"
 	"strings"
+
+	"github.com/renato-macedo/superheroapi/domain"
 )
 
+// CharacterResponse character DTO
 type CharacterResponse struct {
 	*domain.Character
-	Groups []string `json:"groups, omitempty"`
+	Groups []string `json:"groups,omitempty"`
 }
 
+// CreatedResponse to be returned as json
 type CreatedResponse struct {
 	CharactersCount int                  `json:"characters_added"`
 	Characters      []*CharacterResponse `json:"characters"`
 }
 
+// NewCreatedResponse takes the given slice an return a CreatedResponse
 func NewCreatedResponse(characters []*domain.Character) *CreatedResponse {
 	var supers []*CharacterResponse
 
@@ -36,4 +40,16 @@ func parseGroups(groupField string) []string {
 	}
 	// TODO handle edge cases
 	return strings.Split(groupField, ", ")
+}
+
+// OkResponse the be returned on successful operations
+type OkResponse struct {
+	Message string `json:"message"`
+}
+
+// Ok returns a OkResponse with the given message
+func Ok(message string) *OkResponse {
+	return &OkResponse{
+		Message: message,
+	}
 }
