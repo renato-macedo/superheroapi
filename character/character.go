@@ -1,4 +1,4 @@
-package domain
+package character
 
 // Character is a Hero or a Villain
 type Character struct {

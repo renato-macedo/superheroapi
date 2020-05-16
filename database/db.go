@@ -1,11 +1,12 @@
 package database
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/renato-macedo/superheroapi/domain"
 	"log"
 	"os"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/renato-macedo/superheroapi/character"
 )
 
 // Connect to the database
@@ -24,7 +25,7 @@ func Connect(env string) *gorm.DB {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
-	db.AutoMigrate(&domain.Character{})
+	db.AutoMigrate(&character.Character{})
 
 	return db
 }

@@ -1,4 +1,4 @@
-package services
+package superhero
 
 import (
 	"encoding/json"
@@ -65,14 +65,14 @@ type SearchResult struct {
 	Results    []*CharacterResponse `json:"results"`
 }
 
-// SuperHeroAPIService need a baseURL and a API key
-type SuperHeroAPIService struct {
+// Service need a baseURL and a API key
+type Service struct {
 	BaseURL string
 	APIKey  string
 }
 
 // SearchCharacter call search endpoint
-func (api *SuperHeroAPIService) SearchCharacter(name string) (*SearchResult, error) {
+func (api *Service) SearchCharacter(name string) (*SearchResult, error) {
 
 	resp, err := http.Get(fmt.Sprintf("%v/%v/search/%v", api.BaseURL, api.APIKey, name))
 	if err != nil {

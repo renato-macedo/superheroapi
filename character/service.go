@@ -1,24 +1,23 @@
-package services
+package character
 
 import (
 	"fmt"
 	"log"
 	"strings"
 
-	"github.com/renato-macedo/superheroapi/domain"
-	"github.com/renato-macedo/superheroapi/repos"
+	superhero "github.com/renato-macedo/superheroapi/superhero"
 	"github.com/renato-macedo/superheroapi/utils"
 	uuid "github.com/satori/go.uuid"
 )
 
-// CharacterService has methods that handles the Characters use cases
-type CharacterService struct {
-	Repository repos.CharacterRepository
-	API        *SuperHeroAPIService
+// Service has methods that handles the Characters use cases
+type Service struct {
+	Repository Repository
+	API        *superhero.Service
 }
 
 // Create method will store any character that matches the given name in tha superhero api
-func (service *CharacterService) Create(name string) ([]domain.Character, error) {
+func (service *Service) Create(name string) ([]Character, error) {
 
 	/*
 		since it's possible to delete the super,
@@ -33,7 +32,7 @@ func (service *CharacterService) Create(name string) ([]domain.Character, error)
 		return nil, fmt.Errorf("could not add this super because it does not exist")
 	}
 
-	createdCharacters := make([]domain.Character, 0)
+	createdCharacters := make([]Character, 0)
 
 	// check which of the search results were not stored yet
 	for _, value := range result.Results {
@@ -44,7 +43,7 @@ func (service *CharacterService) Create(name string) ([]domain.Character, error)
 		}
 
 		// if they were not stored just do it and append to the createdCharacters slice
-		super := domain.Character{
+		super := Character{
 			ID:                uuid.NewV4().String(),
 			APIID:             value.ID,
 			Name:              value.Name,
@@ -74,32 +73,32 @@ func (service *CharacterService) Create(name string) ([]domain.Character, error)
 }
 
 // FindAll returns all stored supers
-func (service *CharacterService) FindAll() []domain.Character {
+func (service *Service) FindAll() []Character {
 	return service.Repository.FindAll()
 }
 
 // FindHeros returns characters with alignment "good"
-func (service *CharacterService) FindHeros() []domain.Character {
+func (service *Service) FindHeros() []Character {
 	return service.Repository.FindByFilter("alignment = ?", "good")
 }
 
 // FindVillains returns characters with alignment "bad"
-func (service *CharacterService) FindVillains() []domain.Character {
+func (service *Service) FindVillains() []Character {
 	return service.Repository.FindByFilter("alignment = ?", "bad")
 }
 
 // FindByID return a character with the given id
-func (service *CharacterService) FindByID(id string) (*domain.Character, error) {
+func (service *Service) FindByID(id string) (*Character, error) {
 	return service.Repository.FindByID(id)
 }
 
 // FindByName returns all characters that has the given name
-func (service *CharacterService) FindByName(name string) ([]domain.Character, error) {
+func (service *Service) FindByName(name string) ([]Character, error) {
 	return service.Repository.FindByName(name)
 }
 
 // Delete s a character from the database
-func (service *CharacterService) Delete(id string) error {
+func (service *Service) Delete(id string) error {
 	return service.Repository.Delete(id)
 }
 

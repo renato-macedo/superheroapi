@@ -1,45 +1,43 @@
-package utils
+package character
 
 import (
 	"strings"
-
-	"github.com/renato-macedo/superheroapi/domain"
 )
 
-// CharacterDTO character DTO
-type CharacterDTO struct {
-	domain.Character
+// DTO character DTO
+type DTO struct {
+	Character
 	Groups []string `json:"groups,omitempty"`
 }
 
 // CreatedResponse to be returned as json
 type CreatedResponse struct {
-	CharactersCount int            `json:"characters_added"`
-	Characters      []CharacterDTO `json:"characters"`
+	CharactersCount int   `json:"characters_added"`
+	Characters      []DTO `json:"characters"`
 }
 
-// NewCharacterDTO creates a CharacterDTO with the given character model
-func NewCharacterDTO(character *domain.Character) CharacterDTO {
-	return CharacterDTO{
+// NewDTO creates a DTO with the given character model
+func NewDTO(character *Character) DTO {
+	return DTO{
 		Character: *character,
 		Groups:    parseGroups(character.GroupAffiliation),
 	}
 }
 
-// NewSliceCharacterDTO transforms the slice of Character model into a slice of Character response
-func NewSliceCharacterDTO(characters []domain.Character) []CharacterDTO {
-	var supers []CharacterDTO
+// NewSliceDTO transforms the slice of Character model into a slice of Character response
+func NewSliceDTO(characters []Character) []DTO {
+	var supers []DTO
 	for _, value := range characters {
-		supers = append(supers, NewCharacterDTO(&value))
+		supers = append(supers, NewDTO(&value))
 	}
 
 	return supers
 }
 
 // NewCreatedResponse takes the given slice an return a CreatedResponse
-func NewCreatedResponse(characters []domain.Character) *CreatedResponse {
+func NewCreatedResponse(characters []Character) *CreatedResponse {
 
-	supers := NewSliceCharacterDTO(characters)
+	supers := NewSliceDTO(characters)
 	return &CreatedResponse{
 		CharactersCount: len(supers),
 		Characters:      supers,
@@ -59,7 +57,6 @@ func parseGroups(groupField string) []string {
 		for _, secondLv := range strings.Split(firstLv, "; ") {
 			groups = append(groups, secondLv)
 		}
-
 	}
 
 	return groups

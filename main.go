@@ -5,10 +5,9 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/renato-macedo/superheroapi/character"
 	"github.com/renato-macedo/superheroapi/database"
-	"github.com/renato-macedo/superheroapi/handlers"
-	"github.com/renato-macedo/superheroapi/repos"
-	"github.com/renato-macedo/superheroapi/services"
+	"github.com/renato-macedo/superheroapi/superhero"
 
 	"github.com/gofiber/fiber"
 )
@@ -25,16 +24,17 @@ func main() {
 
 	DB := database.Connect(os.Getenv("ENV"))
 
-	characterRepo := repos.NewCharacterRepo(DB)
-	characterService := &services.CharacterService{
+	characterRepo := character.NewCharacterRepo(DB)
+
+	characterService := &character.Service{
 		Repository: characterRepo,
-		API: &services.SuperHeroAPIService{
+		API: &superhero.Service{
 			BaseURL: "https://superheroapi.com/api",
 			APIKey:  os.Getenv("API_KEY"),
 		},
 	}
 
-	characterHandler := handlers.NewCharacterHandler(characterService)
+	characterHandler := character.NewHandler(characterService)
 
 	app := fiber.New()
 
@@ -46,6 +46,5 @@ func main() {
 
 	app.Post("/super", characterHandler.CreateCharacter)
 	app.Delete("/super/:id", characterHandler.Delete)
-
 	app.Listen(3000)
 }

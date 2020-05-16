@@ -1,10 +1,9 @@
-package handlers
+package character
 
 import (
 	"strings"
 
 	"github.com/gofiber/fiber"
-	"github.com/renato-macedo/superheroapi/services"
 	"github.com/renato-macedo/superheroapi/utils"
 )
 
@@ -13,20 +12,20 @@ type CreateRequest struct {
 	Name string `json:"name"`
 }
 
-// CharacterHandler accepts the requests
-type CharacterHandler struct {
-	Service *services.CharacterService
+// Handler accepts the requests
+type Handler struct {
+	Service *Service
 }
 
-// NewCharacterHandler return a instance with the given CharacterService
-func NewCharacterHandler(service *services.CharacterService) *CharacterHandler {
-	return &CharacterHandler{
+// NewHandler return a instance with the given CharacterService
+func NewHandler(service *Service) *Handler {
+	return &Handler{
 		Service: service,
 	}
 }
 
 // CreateCharacter handler
-func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
+func (h *Handler) CreateCharacter(c *fiber.Ctx) {
 	body := &CreateRequest{}
 
 	// Parse body into struct
@@ -55,7 +54,7 @@ func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 		c.Status(400).JSON(utils.BadRequest("Character already exists"))
 		return
 	}
-	response := utils.NewCreatedResponse(createdCharacters)
+	response := NewCreatedResponse(createdCharacters)
 
 	if err := c.Status(201).JSON(response); err != nil {
 		c.Status(500).Send(err)
@@ -64,10 +63,10 @@ func (h *CharacterHandler) CreateCharacter(c *fiber.Ctx) {
 }
 
 // GetCharacter handles GET requests on /super
-func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) {
+func (h *Handler) GetCharacter(c *fiber.Ctx) {
 	characters := h.Service.FindAll()
 
-	supers := utils.NewSliceCharacterDTO(characters)
+	supers := NewSliceDTO(characters)
 
 	if err := c.Status(200).JSON(supers); err != nil {
 		c.Status(500).Send(err)
@@ -80,10 +79,10 @@ func (h *CharacterHandler) GetCharacter(c *fiber.Ctx) {
 }
 
 // GetHeros handles GET requests on /super/heros
-func (h *CharacterHandler) GetHeros(c *fiber.Ctx) {
+func (h *Handler) GetHeros(c *fiber.Ctx) {
 	characters := h.Service.FindHeros()
 
-	supers := utils.NewSliceCharacterDTO(characters)
+	supers := NewSliceDTO(characters)
 
 	if err := c.Status(200).JSON(supers); err != nil {
 		c.Status(500).Send(err)
@@ -91,10 +90,10 @@ func (h *CharacterHandler) GetHeros(c *fiber.Ctx) {
 }
 
 // GetVillains handles GET requests on /super/villains
-func (h *CharacterHandler) GetVillains(c *fiber.Ctx) {
+func (h *Handler) GetVillains(c *fiber.Ctx) {
 	characters := h.Service.FindVillains()
 
-	supers := utils.NewSliceCharacterDTO(characters)
+	supers := NewSliceDTO(characters)
 
 	if err := c.Status(200).JSON(supers); err != nil {
 		c.Status(500).Send(err)
@@ -103,7 +102,7 @@ func (h *CharacterHandler) GetVillains(c *fiber.Ctx) {
 }
 
 //FindByID handles GET requests on /super/:id
-func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
+func (h *Handler) FindByID(c *fiber.Ctx) {
 	id := c.Params("id")
 	character, err := h.Service.FindByID(id)
 
@@ -112,7 +111,7 @@ func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
 		return
 	}
 
-	super := utils.NewCharacterDTO(character)
+	super := NewDTO(character)
 
 	if err := c.JSON(super); err != nil {
 		c.Status(500).JSON(utils.ServerError("Something went wrong"))
@@ -120,7 +119,7 @@ func (h *CharacterHandler) FindByID(c *fiber.Ctx) {
 }
 
 // Search handles GET requests on /super/search
-func (h *CharacterHandler) Search(c *fiber.Ctx) {
+func (h *Handler) Search(c *fiber.Ctx) {
 	name := c.Query("name")
 
 	characters, err := h.Service.FindByName(strings.Title(strings.ToLower(name)))
@@ -129,7 +128,7 @@ func (h *CharacterHandler) Search(c *fiber.Ctx) {
 		return
 	}
 
-	supers := utils.NewSliceCharacterDTO(characters)
+	supers := NewSliceDTO(characters)
 
 	if err := c.JSON(supers); err != nil {
 		c.Status(500).JSON(utils.ServerError("Something went wrong"))
@@ -137,7 +136,7 @@ func (h *CharacterHandler) Search(c *fiber.Ctx) {
 }
 
 // Delete handle DELETE requests on /super/:id
-func (h *CharacterHandler) Delete(c *fiber.Ctx) {
+func (h *Handler) Delete(c *fiber.Ctx) {
 	id := c.Params("id")
 	if id == "" {
 		c.Status(400).JSON(utils.NotFound("Missing character id"))
@@ -149,5 +148,5 @@ func (h *CharacterHandler) Delete(c *fiber.Ctx) {
 		return
 	}
 
-	c.Status(200).JSON(utils.Ok("Character deleted"))
+	c.Status(200).JSON(Ok("Character deleted"))
 }

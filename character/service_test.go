@@ -1,4 +1,4 @@
-package services
+package character
 
 import (
 	"log"
@@ -7,8 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/renato-macedo/superheroapi/database"
-	"github.com/renato-macedo/superheroapi/domain"
-	"github.com/renato-macedo/superheroapi/repos"
+	"github.com/renato-macedo/superheroapi/superhero"
 )
 
 func init() {
@@ -24,13 +23,13 @@ type TestPair struct {
 	output int
 }
 
-func TestCharacterService_Create(t *testing.T) {
+func TestService_Create(t *testing.T) {
 	db := database.Connect("test")
-	repository := repos.NewCharacterRepo(db)
+	repository := NewCharacterRepo(db)
 
-	characterService := &CharacterService{
+	characterService := &Service{
 		Repository: repository,
-		API: &SuperHeroAPIService{
+		API: &superhero.Service{
 			BaseURL: "https://superheroapi.com/api",
 			APIKey:  os.Getenv("API_KEY"),
 		},
@@ -70,7 +69,7 @@ func TestCharacterService_Create(t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		repository.DB.DropTable(&domain.Character{})
+		repository.DB.DropTable(&Character{})
 	})
 
 }
