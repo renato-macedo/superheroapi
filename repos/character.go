@@ -1,6 +1,7 @@
 package repos
 
 import (
+	"errors"
 	"log"
 	"strings"
 
@@ -11,10 +12,10 @@ import (
 // CharacterRepository interface
 type CharacterRepository interface {
 	Store(user *domain.Character) error
-	FindAll() []*domain.Character
-	FindByName(name string) ([]*domain.Character, error)
+	FindAll() []domain.Character
+	FindByName(name string) ([]domain.Character, error)
 	FindByID(id string) (*domain.Character, error)
-	FindByFilter(filter, value string) []*domain.Character
+	FindByFilter(filter, value string) []domain.Character
 	HasCharacterWhere(filter, value string) bool
 	Delete(id string) error
 }
@@ -38,8 +39,8 @@ func (repo *CharacterRepositoryDB) Store(character *domain.Character) error {
 }
 
 // FindByName exec a LIKE querie with the given name
-func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character, error) {
-	var characters []*domain.Character
+func (repo *CharacterRepositoryDB) FindByName(name string) ([]domain.Character, error) {
+	var characters []domain.Character
 	err := repo.DB.Where("name_lower_case LIKE ?", "%"+strings.ToLower(name)+"%").Find(&characters).Error
 	if err != nil {
 		log.Printf("error querying by name %v\n", err)
@@ -49,8 +50,8 @@ func (repo *CharacterRepositoryDB) FindByName(name string) ([]*domain.Character,
 }
 
 // FindByFilter queries character by the given filter e.g. allignment = ?
-func (repo *CharacterRepositoryDB) FindByFilter(filter, value string) []*domain.Character {
-	var characters []*domain.Character
+func (repo *CharacterRepositoryDB) FindByFilter(filter, value string) []domain.Character {
+	var characters []domain.Character
 	repo.DB.Where(filter, value).Find(&characters)
 	return characters
 }
@@ -62,8 +63,8 @@ func (repo *CharacterRepositoryDB) HasCharacterWhere(filter, value string) bool 
 }
 
 // FindAll return all records
-func (repo *CharacterRepositoryDB) FindAll() []*domain.Character {
-	var characters []*domain.Character
+func (repo *CharacterRepositoryDB) FindAll() []domain.Character {
+	var characters []domain.Character
 	repo.DB.Find(&characters)
 	return characters
 }
@@ -84,6 +85,15 @@ func (repo *CharacterRepositoryDB) Delete(id string) error {
 	character := &domain.Character{
 		ID: id,
 	}
-	err := repo.DB.Delete(character).Error
-	return err
+	result := repo.DB.Delete(character)
+
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("Character does not exist")
+	}
+
+	return nil
 }
