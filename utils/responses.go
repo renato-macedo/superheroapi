@@ -52,9 +52,16 @@ func parseGroups(groupField string) []string {
 		return make([]string, 0)
 	}
 
-	groups := strings.Split(groupField, ", ")
+	groups := make([]string, 0)
 
-	// TODO handle edge cases
+	// two types of separators ', ' and '; '
+	for _, firstLv := range strings.Split(groupField, ", ") {
+		for _, secondLv := range strings.Split(firstLv, "; ") {
+			groups = append(groups, secondLv)
+		}
+
+	}
+
 	return groups
 }
 
