@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	_ "github.com/jinzhu/gorm/dialects/postgres" // make linter happy
 	"github.com/renato-macedo/superheroapi/character"
 )
 

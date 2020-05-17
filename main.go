@@ -21,7 +21,12 @@ func init() {
 }
 
 func main() {
+	app := startApp()
 
+	app.Listen(3000)
+}
+
+func startApp() *fiber.App {
 	DB := database.Connect(os.Getenv("ENV"))
 
 	characterRepo := character.NewCharacterRepo(DB)
@@ -46,5 +51,6 @@ func main() {
 
 	app.Post("/super", characterHandler.CreateCharacter)
 	app.Delete("/super/:id", characterHandler.Delete)
-	app.Listen(3000)
+
+	return app
 }
