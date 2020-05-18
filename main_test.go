@@ -53,6 +53,20 @@ func TestGETSupers(t *testing.T) {
 			expectedCode:         200,
 			expectedResultsCount: 5,
 		},
+		{
+			description:          "GET /super/search?name=captain",
+			route:                "/super/search?name=captain",
+			expectedError:        false,
+			expectedCode:         200,
+			expectedResultsCount: 0,
+		},
+		{
+			description:          "GET /super/search",
+			route:                "/super/search",
+			expectedError:        false,
+			expectedCode:         400,
+			expectedResultsCount: 0,
+		},
 	}
 
 	app := startApp()
@@ -80,12 +94,21 @@ func TestGETSupers(t *testing.T) {
 		// Verify if the status code is as expected
 		assert.Equalf(t, test.expectedCode, res.StatusCode, test.description)
 
-		// Read the response body
-		body, err := parseGETResponse(res.Body)
+		if test.expectedCode < 400 {
+			// parse sucessul response
+			body, err := parseGETResponse(res.Body)
 
-		assert.Nilf(t, err, test.description)
+			assert.Nilf(t, err, test.description)
 
-		assert.Equalf(t, test.expectedResultsCount, len(body), test.description)
+			assert.Equalf(t, test.expectedResultsCount, len(body), test.description)
+		} else {
+			// parse error response, maybe it would be better to add a Test function just for bad requests
+			body, err := parseErrorResponse(res.Body)
+
+			assert.Nilf(t, err, test.description)
+			assert.NotEmptyf(t, body["message"], test.description)
+		}
+
 	}
 
 	cleanup()
@@ -187,16 +210,16 @@ func setup(populate bool) func() {
 		}
 	}
 
+	// cleanup
 	return func() {
-
 		repository.DB.Delete(&character.Character{})
-
 	}
 }
 
 func parseGETResponse(body io.Reader) ([]character.DTO, error) {
 	var response []character.DTO
 	err := json.NewDecoder(body).Decode(&response)
+
 	return response, err
 }
 
@@ -212,4 +235,11 @@ func parsePOSTResponse(body io.Reader) (character.CreatedResponse, error) {
 		log.Println(resp)
 	}
 	return *response, err
+}
+
+func parseErrorResponse(body io.Reader) (map[string]string, error) {
+	// if error try to parse with map of strings
+	generic := make(map[string]string)
+	err := json.NewDecoder(body).Decode(&generic)
+	return generic, err
 }
