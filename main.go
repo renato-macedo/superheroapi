@@ -23,7 +23,9 @@ func init() {
 func main() {
 	app := startApp()
 
-	app.Listen(3000)
+	if err := app.Listen(os.Getenv("PORT")); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func startApp() *fiber.App {

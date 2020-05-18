@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  database:
+    image: postgres
+    restart: always
+    tty: true
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=levpay
+    volumes:
+      - .dbdata:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+  web:
+    container_name: web_api
+    build: .
+    image: superheroapi
+    restart: always
+    ports:
+      - '5000:5000'
+    depends_on:
+      - database
+
+volumes:
+  .dbdata:
