@@ -122,6 +122,10 @@ func (h *Handler) FindByID(c *fiber.Ctx) {
 func (h *Handler) Search(c *fiber.Ctx) {
 	name := c.Query("name")
 
+	if name == "" {
+		c.Status(400).JSON(utils.BadRequest("Missing name query param"))
+		return
+	}
 	characters, err := h.Service.FindByName(strings.Title(strings.ToLower(name)))
 	if err != nil {
 		c.Status(404).JSON(utils.NotFound("Character not found"))

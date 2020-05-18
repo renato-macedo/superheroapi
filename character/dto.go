@@ -26,7 +26,7 @@ func NewDTO(character *Character) DTO {
 
 // NewSliceDTO transforms the slice of Character model into a slice of Character response
 func NewSliceDTO(characters []Character) []DTO {
-	var supers []DTO
+	supers := make([]DTO, 0)
 	for _, value := range characters {
 		supers = append(supers, NewDTO(&value))
 	}
