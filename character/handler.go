@@ -71,11 +71,6 @@ func (h *Handler) GetCharacter(c *fiber.Ctx) {
 	if err := c.Status(200).JSON(supers); err != nil {
 		c.Status(500).Send(err)
 	}
-
-	if err := c.Status(200).JSON(characters); err != nil {
-		c.Status(500).Send(err)
-		return
-	}
 }
 
 // GetHeros handles GET requests on /super/heros

@@ -7,7 +7,7 @@ import (
 // DTO character DTO
 type DTO struct {
 	Character
-	Groups []string `json:"groups,omitempty"`
+	Groups []string `json:"groups"`
 }
 
 // CreatedResponse to be returned as json
