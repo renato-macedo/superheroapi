@@ -33,7 +33,7 @@ docker run --rm --name pgsql -d -p 5432:5432 -e POSTGRES_PASSWORD=root -e POSTGR
 Depois:
 
 ```bash
-go test ./...
+go test ./... -p 1
 ```
 
 ### Endpoints
