@@ -103,7 +103,16 @@ func (service *Service) Delete(id string) error {
 }
 
 func parseRelatives(relativesResult string) int {
-	// TODO handle edge cases
-	relatives := strings.Split(relativesResult, "),")
-	return len(relatives)
+	if relativesResult == "-" {
+		return 0
+	}
+	counter := 0
+
+	firstLv := strings.Split(relativesResult, ";")
+
+	for _, val := range firstLv {
+		counter += len(strings.Split(val, "), "))
+	}
+
+	return counter
 }
